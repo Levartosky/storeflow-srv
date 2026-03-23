@@ -1,4 +1,4 @@
-# Storeflow Service
+# Storeflow
 
 ## Descrição do Projeto
 O **Storeflow Service** é uma aplicação backend desenvolvida em Java com o framework Spring Boot. Este serviço é responsável por gerenciar o catálogo de produtos e categorias de uma loja, fornecendo endpoints RESTful para operações CRUD e outras funcionalidades relacionadas.

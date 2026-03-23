@@ -6,6 +6,7 @@ import br.com.storeflow.srv.catalog.service.*;
 import br.com.storeflow.srv.catalog.dto.*;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/products")
@@ -27,5 +28,12 @@ public class ProductController {
     public List<ProductResponse> getAllProduct() {
         return productService.getAllProducts();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> findById(@PathVariable Long id){
+        return ResponseEntity.ok(productService.findById(id));
+    }
+
+    
     
 }

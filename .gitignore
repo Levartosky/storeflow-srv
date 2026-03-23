@@ -1,0 +1,19 @@
+# Ignore target directory
+/target/
+
+# Ignore IDE files
+/.idea/
+*.iml
+*.class
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+
+# Ignore application configuration files
+application-local.yml
+application.yml

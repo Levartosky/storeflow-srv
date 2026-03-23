@@ -65,4 +65,24 @@ public class ProductService {
         product.getCategory().getId()
       )).toList();
     }
-}
+
+    public ProductResponse findById(Long id) {
+        Product product = productRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Product not found"));  
+        return toResponse(product);
+    }
+
+    private ProductResponse toResponse(Product product) {
+        return new ProductResponse(
+            product.getId(),
+            product.getName(),
+            product.getDescription(),
+            product.getPrice(),
+            product.getStock(),
+            product.getActive(),
+            product.getCreatedAt(),
+            product.getCategory().getId()
+        );
+    }
+    
+    }

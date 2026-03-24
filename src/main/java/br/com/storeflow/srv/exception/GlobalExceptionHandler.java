@@ -36,4 +36,24 @@ public class GlobalExceptionHandler {
     problemDetail.setTitle("Business Rule Error");
     return problemDetail;
     }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ProblemDetail handleNotFound(ResourceNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.NOT_FOUND,
+            ex.getMessage()
+        );
+        problemDetail.setTitle("Resource Not Found");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ProblemDetail handleBusinessException(BusinessException ex){
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST,
+            ex.getMessage()
+        );
+        problemDetail.setTitle("Business Rule Error" );
+        return problemDetail;
+    }
 }

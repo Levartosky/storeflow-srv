@@ -9,6 +9,10 @@ import br.com.storeflow.srv.catalog.dto.ProductResponse;
 import br.com.storeflow.srv.catalog.dto.CreateProductRequest;
 import br.com.storeflow.srv.catalog.domain.Product;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import br.com.storeflow.srv.exception.ResourceNotFoundException;
+import br.com.storeflow.srv.catalog.service.mapper.ProductMapper;
 
 
 @Service
@@ -16,15 +20,17 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductMapper productMapper;
     
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository){
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, ProductMapper productMapper){
         this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;        
+        this.categoryRepository = categoryRepository;
+        this.productMapper = productMapper;        
     }
 
     public ProductResponse createProduct(CreateProductRequest request) {
         Category category = categoryRepository.findById(request.categoryId())
-        .orElseThrow(() -> new RuntimeException("Category not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
         Product product = new Product();
         product.setName(request.name());
@@ -37,52 +43,23 @@ public class ProductService {
         product.setCreatedAt(LocalDateTime.now());
 
         Product savedProduct = productRepository.save(product);
-
-        return new ProductResponse(
-            savedProduct.getId(),
-            savedProduct.getName(),
-            savedProduct.getDescription(),
-            savedProduct.getPrice(),
-            savedProduct.getStock(),
-            savedProduct.getActive(),
-            savedProduct.getCreatedAt(),
-            savedProduct.getCategory().getId()
-        );
+        return productMapper.toResponse(savedProduct);
     }     
     
-    public List<ProductResponse> getAllProducts()
-{
-    return productRepository.findAll()
-    .stream()
-    .map(product -> new ProductResponse(
-        product.getId(),
-        product.getName(),
-        product.getDescription(),
-        product.getPrice(),
-        product.getStock(),
-        product.getActive(),
-        product.getCreatedAt(),
-        product.getCategory().getId()
-      )).toList();
-    }
-
     public ProductResponse findById(Long id) {
         Product product = productRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Product not found"));  
-        return toResponse(product);
+        .orElseThrow(() -> new ResourceNotFoundException("Product not found"));  
+        return productMapper.toResponse(product);
     }
 
-    private ProductResponse toResponse(Product product) {
-        return new ProductResponse(
-            product.getId(),
-            product.getName(),
-            product.getDescription(),
-            product.getPrice(),
-            product.getStock(),
-            product.getActive(),
-            product.getCreatedAt(),
-            product.getCategory().getId()
-        );
+    public Page<ProductResponse> findAll(Long categoryId, Pageable pageable) {
+        Page<Product> products;
+
+        if(categoryId != null){
+            products = productRepository.findByCategoryId(categoryId, pageable);
+        }  else {
+            products = productRepository.findAll(pageable);
+        }
+        return products.map(productMapper::toResponse);
     }
-    
-    }
+}

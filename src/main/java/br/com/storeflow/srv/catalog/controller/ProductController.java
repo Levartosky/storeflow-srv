@@ -7,6 +7,9 @@ import br.com.storeflow.srv.catalog.dto.*;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 @RestController
 @RequestMapping("/products")
@@ -24,16 +27,17 @@ public class ProductController {
         return productService.createProduct(request);
     }
 
-    @GetMapping
-    public List<ProductResponse> getAllProduct() {
-        return productService.getAllProducts();
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> findById(@PathVariable Long id){
         return ResponseEntity.ok(productService.findById(id));
     }
 
     
-    
+    @GetMapping
+    public ResponseEntity<Page<ProductResponse>> findAll(
+        @RequestParam(required = false) Long categoryId,
+        @PageableDefault(size = 10) Pageable pageable)
+    {
+    return ResponseEntity.ok(productService.findAll(categoryId, pageable));
+    }
 }

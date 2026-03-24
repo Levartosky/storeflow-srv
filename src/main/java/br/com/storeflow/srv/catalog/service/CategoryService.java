@@ -8,6 +8,7 @@ import br.com.storeflow.srv.catalog.dto.CategoryResponse;
 import br.com.storeflow.srv.catalog.domain.Category;
 import java.time.LocalDateTime;
 import java.util.List;
+import br.com.storeflow.srv.exception.BusinessException;
 
 @Service
 public class CategoryService {
@@ -21,7 +22,7 @@ public class CategoryService {
     public CategoryResponse create(CreateCategoryRequest request) {
         categoryRepository.findByNameIgnoreCase(request.name())
         .ifPresent(category -> {
-            throw new IllegalArgumentException("Category already exists");  
+            throw new BusinessException("Category already exists");  
         });
 
         Category category = new Category();
